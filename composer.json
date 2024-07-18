@@ -1,0 +1,16 @@
+{
+    "name": "sasha0pro/frame",
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/",
+            "Framework\\": "framework/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Sasha0pro",
+            "email": "sasha0pro@bk.ru"
+        }
+    ],
+    "require": {}
+}
