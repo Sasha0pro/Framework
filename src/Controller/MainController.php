@@ -13,7 +13,7 @@ class MainController extends Controller
     {
         $request = new Request();
 
-        return $request->setHttpMethod('GET')->getHttpMethod();
+        return $request->getHttpMethod();
     }
 
 }

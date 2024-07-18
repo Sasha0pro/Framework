@@ -16,6 +16,7 @@ class Request
     {
         $this->path = $_SERVER["REQUEST_URI"];
         $this->type = $_SERVER['REQUEST_METHOD'];
+        $this->setHttpMethod($this->type);
     }
 
     public function getPath(): string
@@ -33,7 +34,7 @@ class Request
         return $key === null ? $this->httpMethod : $this->httpMethod[$key];
     }
 
-    public function setHttpMethod(string $method): Request
+    public function setHttpMethod(string $method)
     {
         if ($method === "PUT") {
             $this->httpMethod = str_split(file_get_contents('php://input'));
@@ -47,8 +48,6 @@ class Request
         else if ($method === "GET"){
             $this->httpMethod = $_GET;
         }
-
-        return $this;
     }
 
 
