@@ -4,42 +4,35 @@ namespace Framework\Routing;
 
 use Exception;
 use Framework\HTTP\Request\Request;
-use Framework\LoadController;
+use Framework\ControllerHandler;
 
 class Router
 {
-    private Request $request;
-
-    public function __construct(Request $request)
-    {
-        $this->request = $request;
-    }
+    public function __construct(private readonly Request $request)
+    {}
 
     /**
+     * initRoutes
      * @throws Exception
      */
     public function addRoute(): void
     {
-        $loadController = new LoadController();
-        $controllers = $loadController->load();
+        $ControllerHandler = new ControllerHandler();
+        $controllers = $ControllerHandler->load();
         $path = $this->getPath();
+        $response = null;
 
         foreach ($controllers as $controller) {
-           $methodsAndAttributes = $loadController->getMethodsAndAttributes($controller);
-            foreach ($methodsAndAttributes as $key => $method) {
-                if ($path === $method->getPath()) {
-                    if ($method->getType() === $this->request->getType()) {
-                        echo $controller->$key();
-                    }
-                    else {
-                        throw new Exception('HTTP method does not match', 404);
-                    }
-                }
-                else {
-                    throw new Exception('Route not found', 404);
+            $attributes = $ControllerHandler->getAttributes($controller);
+            foreach ($attributes as $method => $attribute) {
+                if ($path === $attribute->getPath() && $attribute->getType() === $this->request->getType()) {
+                    $response = $controller->$method();
                 }
             }
         }
+        $this->checkResponse($response);
+        $this->response($response);
+
     }
 
     public function getPath(): ?string
@@ -49,4 +42,20 @@ class Router
         return $path === false ? $this->request->getPath() : $path;
     }
 
+    public function response(mixed $response): void
+    {
+        echo $response;
+    }
+
+    /**
+     * mixed
+     * @throws Exception
+     */
+    public function checkResponse($response): void
+    {
+        if ($response === null) {
+            // Завести енам для HTTP кодов
+            throw new Exception('Route not found', 404);
+        }
+    }
 }

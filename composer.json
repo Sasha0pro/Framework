@@ -12,5 +12,9 @@
             "email": "sasha0pro@bk.ru"
         }
     ],
-    "require": {}
+    "require": {
+      "ext-pdo": "*",
+        "malkusch/lock": "^2.2",
+        "predis/predis": "^2.2"
+    }
 }
