@@ -15,12 +15,13 @@ class ControllerCacheHandler
 
     public function get(): false|array
     {
-        return unserialize($this->redis->get('Controllers'));
+        return unserialize(trim($this->redis->get('Controllers'), "'"));
     }
 
     public function create(array $controllers): void
     {
-        $this->redis->set('Controllers', serialize($controllers));
+        $json = "'" . serialize($controllers) . "'";
+        $this->redis->set('Controllers', $json);
     }
 
     public function check(): bool

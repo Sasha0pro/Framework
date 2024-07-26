@@ -2,6 +2,7 @@
 
 namespace Framework\Container\Handlers;
 
+use Framework\Container\Exceptions\InvalidParameterException;
 use Framework\Container\Exceptions\ServiceNotFoundException;
 use ReflectionClass;
 use ReflectionException;
@@ -57,8 +58,11 @@ class ServiceHandler
                 foreach ($reflectionClass->getConstructor()->getParameters() as $parameter) {
                     if ($parameter->hasType()) {
                         $type = $parameter->getType()->getName();
-                        if ($type !== 'string' && $type !== 'array' && $type !== 'object') {
+                        if ($type !== 'string' && $type !== 'array' && $type !== 'object' && $type !== 'mixed') {
                             $pathParameterObjects[] = $type;
+                        }
+                        else {
+                            throw new InvalidParameterException('invalid constructor parameter');
                         }
                     }
                 }

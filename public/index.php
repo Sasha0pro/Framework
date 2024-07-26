@@ -9,7 +9,7 @@ use Framework\Routing\Router;
 
 $router = new Router(new Request());
 try {
-    $router->addRoute();
+    $router->initRouters();
 } catch (Exception $e) {
     echo $e->getMessage();
  }

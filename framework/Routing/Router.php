@@ -12,27 +12,16 @@ class Router
     {}
 
     /**
-     * initRoutes
      * @throws Exception
      */
-    public function addRoute(): void
+    public function initRouters(): void
     {
         $ControllerHandler = new ControllerHandler();
-        $controllers = $ControllerHandler->load();
-        $path = $this->getPath();
-        $response = null;
-
-        foreach ($controllers as $controller) {
-            $attributes = $ControllerHandler->getAttributes($controller);
-            foreach ($attributes as $method => $attribute) {
-                if ($path === $attribute->getPath() && $attribute->getType() === $this->request->getType()) {
-                    $response = $controller->$method();
-                }
-            }
-        }
-        $this->checkResponse($response);
+        $controller = $ControllerHandler->getController($this->getPath());
+        $this->checkController($controller);
+        $method = $controller['method'];
+        $response = $controller['controller']->$method();
         $this->response($response);
-
     }
 
     public function getPath(): ?string
@@ -51,9 +40,9 @@ class Router
      * mixed
      * @throws Exception
      */
-    public function checkResponse($response): void
+    public function checkController($controller): void
     {
-        if ($response === null) {
+        if ($controller === null) {
             // Завести енам для HTTP кодов
             throw new Exception('Route not found', 404);
         }

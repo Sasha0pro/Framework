@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Model\User;
 use Framework\Controller\AbstractController;
 use Framework\Routing\Attribute\Route;
 

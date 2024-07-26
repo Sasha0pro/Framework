@@ -2,6 +2,8 @@
 
 namespace Framework\Container\Handlers;
 
+use Framework\Controller\AbstractController;
+
 class ContainerCacheHandler
 {
     private string $pathFile;

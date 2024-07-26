@@ -11,9 +11,12 @@ use ReflectionClass;
 
 class ControllerHandler
 {
-    public function load(): array
+    /**
+     * @throws Exception
+     */
+    public function getControllers(): array
     {
-        $controllers = [];
+        $controllers = null;
         $container = new Container();
         $cache = new ControllerCacheHandler();
         if ($cache->check()) {
@@ -22,11 +25,15 @@ class ControllerHandler
         else {
             foreach ($container->getAll() as $service) {
                 if ($service instanceof AbstractController) {
-                    $controllers[] = $service;
+                    $attributes = $this->getAttributes($service);
+                    foreach ($attributes as $method => $attribute) {
+                        $controllers[$attribute->getPath()] = ['method' => $method, 'controller' => $service, 'type' => $attribute->getType()];
+                    }
                 }
             }
             $cache->create($controllers);
         }
+
         return $controllers;
     }
 
@@ -53,5 +60,15 @@ class ControllerHandler
         }
 
         return $attributes;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function getController(string $path)
+    {
+        $controllers = $this->getControllers();
+
+        return $controllers[$path];
     }
 }
