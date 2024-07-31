@@ -4,42 +4,24 @@ namespace Framework\Routing;
 
 use Exception;
 use Framework\HTTP\Request\Request;
-use Framework\LoadController;
+use Framework\ControllerHandler;
 
 class Router
 {
-    private Request $request;
-
-    public function __construct(Request $request)
-    {
-        $this->request = $request;
-    }
+    public function __construct(private readonly Request $request)
+    {}
 
     /**
      * @throws Exception
      */
-    public function addRoute(): void
+    public function initRouters(): void
     {
-        $loadController = new LoadController();
-        $controllers = $loadController->load();
-        $path = $this->getPath();
-
-        foreach ($controllers as $controller) {
-           $methodsAndAttributes = $loadController->getMethodsAndAttributes($controller);
-            foreach ($methodsAndAttributes as $key => $method) {
-                if ($path === $method->getPath()) {
-                    if ($method->getType() === $this->request->getType()) {
-                        echo $controller->$key();
-                    }
-                    else {
-                        throw new Exception('HTTP method does not match', 404);
-                    }
-                }
-                else {
-                    throw new Exception('Route not found', 404);
-                }
-            }
-        }
+        $ControllerHandler = new ControllerHandler();
+        $controller = $ControllerHandler->getController($this->getPath());
+        $this->checkController($controller);
+        $method = $controller['method'];
+        $response = $controller['controller']->$method();
+        $this->response($response);
     }
 
     public function getPath(): ?string
@@ -49,4 +31,20 @@ class Router
         return $path === false ? $this->request->getPath() : $path;
     }
 
+    public function response(mixed $response): void
+    {
+        echo $response;
+    }
+
+    /**
+     * mixed
+     * @throws Exception
+     */
+    public function checkController($controller): void
+    {
+        if ($controller === null) {
+            // Завести енам для HTTP кодов
+            throw new Exception('Route not found', 404);
+        }
+    }
 }

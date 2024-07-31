@@ -7,13 +7,12 @@ use Attribute;
 #[Attribute]
 class Route
 {
-    private string $path;
-    private string $type;
-    public function __construct(string $path, string $type)
-    {
-        $this->path = $path;
-        $this->type = $type;
-    }
+    public function __construct
+    (
+        private readonly string $path,
+        private readonly string $type
+    )
+    {}
 
     public function getPath(): string
     {

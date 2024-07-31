@@ -2,18 +2,18 @@
 
 namespace App\Controller;
 
-use Framework\Controller\Controller;
-use Framework\HTTP\Request\Request;
+use Framework\Controller\AbstractController;
 use Framework\Routing\Attribute\Route;
 
-class MainController extends Controller
+class MainController extends AbstractController
 {
+    public function __construct
+    ()
+    {}
+
     #[Route('/main', 'GET')]
-    public function main(): array
+    public function main(): string
     {
-        $request = new Request();
-
-        return $request->getHttpMethod();
+        return '11111';
     }
-
 }

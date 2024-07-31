@@ -6,6 +6,9 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'malkusch\\lock\\' => array($vendorDir . '/malkusch/lock/classes'),
+    'Psr\\Log\\' => array($vendorDir . '/psr/log/src'),
+    'Predis\\' => array($vendorDir . '/predis/predis/src'),
     'Framework\\' => array($baseDir . '/framework'),
     'App\\' => array($baseDir . '/src'),
 );
