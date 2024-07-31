@@ -7,6 +7,15 @@ namespace Composer\Autoload;
 class ComposerStaticInit63680f70e10b1aff252e68d18c2c873d
 {
     public static $prefixLengthsPsr4 = array (
+        'm' => 
+        array (
+            'malkusch\\lock\\' => 14,
+        ),
+        'P' => 
+        array (
+            'Psr\\Log\\' => 8,
+            'Predis\\' => 7,
+        ),
         'F' => 
         array (
             'Framework\\' => 10,
@@ -18,6 +27,18 @@ class ComposerStaticInit63680f70e10b1aff252e68d18c2c873d
     );
 
     public static $prefixDirsPsr4 = array (
+        'malkusch\\lock\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/malkusch/lock/classes',
+        ),
+        'Psr\\Log\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/log/src',
+        ),
+        'Predis\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/predis/predis/src',
+        ),
         'Framework\\' => 
         array (
             0 => __DIR__ . '/../..' . '/framework',

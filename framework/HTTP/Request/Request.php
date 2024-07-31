@@ -2,19 +2,18 @@
 
 namespace Framework\HTTP\Request;
 
-
-use Framework\HTTP\Request\HttpMethods\PostMethods;
-
+// singleton паттерн
 class Request
 {
     private string $path;
 
     private array $httpMethod;
+
     private string $type;
 
     public function __construct()
     {
-        $this->path = $_SERVER["REQUEST_URI"];
+        $this->path = $_SERVER["REQUEST_URI"]; // '
         $this->type = $_SERVER['REQUEST_METHOD'];
         $this->setHttpMethod($this->type);
     }
@@ -34,8 +33,10 @@ class Request
         return $key === null ? $this->httpMethod : $this->httpMethod[$key];
     }
 
-    public function setHttpMethod(string $method)
+    // Бред
+    public function setHttpMethod(string $method) // тип
     {
+        // switch - case
         if ($method === "PUT") {
             $this->httpMethod = str_split(file_get_contents('php://input'));
         }
