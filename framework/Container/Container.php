@@ -17,8 +17,7 @@ class Container implements ContainerInterface
             $serviceHandler = new ServiceHandler();
             $this->services = $serviceHandler->getServices();
             $cache->create($this->services);
-        }
-        else {
+        } else {
             $this->services = $cache->get();
         }
     }
@@ -29,11 +28,9 @@ class Container implements ContainerInterface
     public function get(string $id): ?object
     {
         if ($this->has($id)) {
-            return $this->services[$id];
-        }
-        else {
             throw new ServiceNotFoundException('Service not found', 404);
         }
+        return $this->services[$id];
     }
 
     public function getAll(): array
