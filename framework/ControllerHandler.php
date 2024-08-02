@@ -21,8 +21,7 @@ class ControllerHandler
         $cache = new ControllerCacheHandler();
         if ($cache->check()) {
             $controllers = $cache->get();
-        }
-        else {
+        } else {
             foreach ($container->getAll() as $service) {
                 if ($service instanceof AbstractController) {
                     $attributes = $this->getAttributes($service);

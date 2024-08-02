@@ -2,8 +2,6 @@
 
 namespace Framework\Container\Handlers;
 
-use Framework\Controller\AbstractController;
-
 class ContainerCacheHandler
 {
     private string $pathFile;
@@ -16,11 +14,6 @@ class ContainerCacheHandler
     public function create(array $services): void
     {
         file_put_contents($this->pathFile, serialize($services));
-    }
-
-    public function delete()
-    {
-
     }
 
     public function get()

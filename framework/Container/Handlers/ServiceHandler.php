@@ -14,30 +14,31 @@ class ServiceHandler
     /**
      * @throws ReflectionException
      * @throws ServiceNotFoundException
+     * @throws InvalidParameterException
      */
-    public function __construct()
+    public function __construct(private readonly PathHandler $pathHandler = new PathHandler())
     {
         $directory = dirname(__DIR__) . '/../../src';
-        $this->servicesLoad($directory);
+        $this->searchFile($directory);
     }
 
     /**
      * @throws ReflectionException
      * @throws ServiceNotFoundException
+     * @throws InvalidParameterException
      */
-    public function servicesLoad(string $directory): void
+    public function searchFile(string $directory): void
     {
         if ($d = opendir($directory)) {
             while (($file = readdir($d))) {
                 $path = $directory . '/' . $file;
                 if ($file === '.' || $file === '..' || $directory === dirname(__DIR__) . '/../src/Model') {
                     continue;
-                }
-                else if (filetype($path) === 'dir') {
-                    $this->servicesLoad($path);
-                }
-                else if (filetype($path) === 'file') {
-                    $this->setServices($path);
+                } elseif (filetype($path) === 'dir') {
+                    $this->searchFile($path);
+                } elseif (filetype($path) === 'file') {
+                    $class = $this->pathHandler->absolutePathToNamespace($path);
+                    $this->services[$class] = $this->getService($class);
                 }
             }
         }
@@ -46,46 +47,32 @@ class ServiceHandler
     /**
      * @throws ReflectionException
      * @throws ServiceNotFoundException
+     * @throws InvalidParameterException
      */
-    public function setServices(string $pathService): void
+    public function initService(string $class): mixed
     {
-        $pathHandler = new PathHandler();
         $pathParameterObjects = [];
-        $namespaceObject = $pathHandler->AbsolutePathToNamespace($pathService);
-        if (!$this->has($namespaceObject)) {
-            $reflectionClass = new ReflectionClass($namespaceObject);
-            if ($reflectionClass->getConstructor() !== null) {
-                foreach ($reflectionClass->getConstructor()->getParameters() as $parameter) {
-                    if ($parameter->hasType()) {
-                        $type = $parameter->getType()->getName();
-                        if ($type !== 'string' && $type !== 'array' && $type !== 'object' && $type !== 'mixed') {
-                            $pathParameterObjects[] = $type;
-                        }
-                        else {
-                            throw new InvalidParameterException('invalid constructor parameter');
-                        }
-                    }
-                }
-            }
-            if ($pathParameterObjects === []) {
-                $this->services[$namespaceObject] = new $namespaceObject();
-            }
-            else {
-                foreach ($pathParameterObjects as $pathParameterObject) {
-                    if ($this->has($pathParameterObject)) {
-                        $this->services[$namespaceObject] = new $namespaceObject($this->services[$pathParameterObject]);
-                    } else {
-                        $this->setServices($pathHandler->NamespaceToAbsolutePath($pathParameterObject));
-                        $this->setServices($pathService);
-                    }
+        $reflectionClass = new ReflectionClass($class);
+        if ($reflectionClass->getConstructor() !== null) {
+            foreach ($reflectionClass->getConstructor()->getParameters() as $parameter) {
+                if ($parameter->hasType() && !$parameter->getType()->isBuiltin()) {
+                    $pathParameterObjects[] = $this->getService($parameter->getType()->getName());
+                } else {
+                    throw new InvalidParameterException('invalid constructor parameter');
                 }
             }
         }
+        return $this->services[$class] = new $class(...$pathParameterObjects);
     }
 
-    public function has(string $id): bool
+    /**
+     * @throws InvalidParameterException
+     * @throws ReflectionException
+     * @throws ServiceNotFoundException
+     */
+    public function getService(string $id): object
     {
-        return isset($this->services[$id]);
+        return $this->services[$id] ?? $this->initService($id);
     }
 
     public function getServices(): array
